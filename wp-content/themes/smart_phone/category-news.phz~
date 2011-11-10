@@ -1,0 +1,14 @@
+<?php
+/*
+template Name: カテゴリーニュース
+*/
+get_header(); ?>
+
+<!-- / #globalHeader --></header>
+
+
+<h1><?php the_title();?></h1>
+
+</section>
+
+<?php get_footer(); ?>
