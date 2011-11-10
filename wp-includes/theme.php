@@ -44,7 +44,8 @@ function get_stylesheet() {
  * @return string Path to current theme directory.
  */
 function get_stylesheet_directory() {
-	$stylesheet = get_stylesheet();
+
+	$stylesheet = _check_user_agent_sp('stylesheet');	
 	$theme_root = get_theme_root( $stylesheet );
 	$stylesheet_dir = "$theme_root/$stylesheet";
 
@@ -59,7 +60,8 @@ function get_stylesheet_directory() {
  * @return string
  */
 function get_stylesheet_directory_uri() {
-	$stylesheet = get_stylesheet();
+
+	$stylesheet = _check_user_agent_sp('stylesheet');		
 	$theme_root_uri = get_theme_root_uri( $stylesheet );
 	$stylesheet_dir_uri = "$theme_root_uri/$stylesheet";
 
@@ -137,10 +139,11 @@ function get_template() {
  * @return string Template directory path.
  */
 function get_template_directory() {
-	$template = get_template();
-	$theme_root = get_theme_root( $template );
-	$template_dir = "$theme_root/$template";
 
+	$template = _check_user_agent_sp();		
+	$theme_root = get_theme_root( $template );
+
+	$template_dir = "$theme_root/$template";
 	return apply_filters( 'template_directory', $template_dir, $template, $theme_root );
 }
 
@@ -153,10 +156,10 @@ function get_template_directory() {
  * @return string Template directory URI.
  */
 function get_template_directory_uri() {
-	$template = get_template();
+
+	$template = _check_user_agent_sp();
 	$theme_root_uri = get_theme_root_uri( $template );
 	$template_dir_uri = "$theme_root_uri/$template";
-
 	return apply_filters( 'template_directory_uri', $template_dir_uri, $template, $theme_root_uri );
 }
 
@@ -1875,6 +1878,34 @@ function _delete_attachment_theme_mod( $id ) {
 
 	if ( $background_image && $background_image == $attachment_image )
 		remove_theme_mod( 'background_image' );
+}
+
+/**
+ * check user agent smart phone
+ *
+ */
+function _check_user_agent_sp($type = "template") {
+
+	$sm_ua = array(
+		'iPhone',         // Apple iPhone
+		'iPod',           // Apple iPod touch
+		'Android',        // 1.5+ Android
+		'dream',          // Pre 1.5 Android
+		'CUPCAKE',        // 1.5+ Android
+		'webOS',          // Palm Pre Experimental
+		'incognito',      // Other iPhone browser
+		'webmate'         // Other iPhone browser
+    	);
+
+	$pattern = '/'.implode('|', $sm_ua).'/i';
+	//$pattern_facebook = "todo";
+	if (preg_match($pattern, $_SERVER['HTTP_USER_AGENT'])) {
+		$template = "smart_phone";
+	} else {
+		$template = ($type == "template") ? get_template() : get_stylesheet();	
+	}
+
+	return $template;
 }
 
 add_action( 'delete_attachment', '_delete_attachment_theme_mod' );
